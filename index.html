@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simplicity Select — Cars Available</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    --bg: #EEEAE0;
+    --surface: #FBFAF6;
+    --surface-2: #F2EEE3;
+    --ink: #1C2226;
+    --ink-soft: #45505A;
+    --muted: #756C5C;
+    --line: #D7CFBE;
+    --blue: #2B4C6F;
+    --blue-ink: #17324B;
+    --amber: #B96A17;
+    --amber-bg: #F3E2C8;
+    --good: #3C6E4E;
+    --shadow: 0 1px 2px rgba(28,34,38,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #191C1F;
+      --surface: #22262A;
+      --surface-2: #2A2F34;
+      --ink: #ECE8DE;
+      --ink-soft: #C6BFAF;
+      --muted: #9A927F;
+      --line: #3A3F44;
+      --blue: #7FA6D1;
+      --blue-ink: #BFD6EE;
+      --amber: #E8A33D;
+      --amber-bg: #3A3020;
+      --good: #7FBF97;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #191C1F;
+    --surface: #22262A;
+    --surface-2: #2A2F34;
+    --ink: #ECE8DE;
+    --ink-soft: #C6BFAF;
+    --muted: #9A927F;
+    --line: #3A3F44;
+    --blue: #7FA6D1;
+    --blue-ink: #BFD6EE;
+    --amber: #E8A33D;
+    --amber-bg: #3A3020;
+    --good: #7FBF97;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100%;
+  }
+  h1, h2, h3, .display {
+    font-family: 'Barlow Condensed', 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.05;
+    margin: 0;
+  }
+  a { color: inherit; }
+  button { font-family: inherit; }
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+
+  /* header */
+  header.site {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+  }
+  .brand { display: flex; align-items: baseline; gap: 10px; }
+  .brand .plate {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    color: var(--blue-ink);
+    background: var(--amber-bg);
+    border: 1px solid var(--amber);
+    padding: 2px 8px;
+    clip-path: polygon(6px 0, 100% 0, 100% 100%, 0 100%, 0 6px);
+  }
+  .brand h1 { font-size: 26px; }
+  .brand .tagline { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.08s ease, background 0.15s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--good); color: #fff; }
+  .btn-primary:hover { background: #2F5A3D; }
+  .btn-outline { background: transparent; border-color: var(--line); color: var(--ink); }
+  .btn-outline:hover { border-color: var(--blue); }
+  .btn-quiet { background: transparent; color: var(--muted); border: none; font-size: 13px; padding: 6px 8px; }
+  .btn-quiet:hover { color: var(--ink); }
+  .btn-danger { background: transparent; color: #A5432F; border: 1px solid #A5432F; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* hero */
+  .hero {
+    padding: 40px 20px 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero .intro { max-width: 640px; }
+  .hero h2 { font-size: 40px; color: var(--ink); }
+  .hero p.lede { font-size: 16px; color: var(--ink-soft); margin-top: 10px; line-height: 1.5; }
+  .hero-contact {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .stat-line { font-size: 13px; color: var(--muted); }
+
+  /* filter bar */
+  .toolbar {
+    position: sticky;
+    top: calc(env(safe-area-inset-top, 0px) + 65px);
+    z-index: 15;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 20px;
+  }
+  .toolbar-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .field label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  input, select, textarea {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+  }
+  .search-field { flex: 1 1 200px; min-width: 160px; }
+  .num-field { width: 108px; }
+  .toolbar .result-count { margin-left: auto; font-size: 13px; color: var(--muted); white-space: nowrap; }
+
+  /* grid */
+  main { padding: 28px 20px 60px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .card .photo-wrap {
+    position: relative;
+    aspect-ratio: 4/3;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .card .photo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .card .photo-wrap .no-photo {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 13px;
+  }
+  .year-badge {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    padding: 4px 12px 4px 10px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  }
+  .condition-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+  }
+  .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card-title { font-size: 21px; }
+  .card-specs { font-size: 13px; color: var(--muted); }
+  .card-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.45; flex: 1; }
+  .card-price {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--amber);
+  }
+  .card-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .card-actions .btn { flex: 1; }
+  .admin-row { display: flex; gap: 6px; }
+
+  .wa-icon { width: 16px; height: 16px; flex: none; }
+
+  .empty {
+    text-align: center;
+    padding: 70px 20px;
+    color: var(--muted);
+  }
+  .empty h3 { font-size: 24px; color: var(--ink); margin-bottom: 8px; }
+
+  footer.site {
+    border-top: 1px solid var(--line);
+    padding: 22px 20px 40px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  footer.site button { margin-top: 6px; }
+
+  /* modal */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(20,22,20,0.55);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 5vh 16px;
+    overflow-y: auto;
+    z-index: 100;
+  }
+  .modal-backdrop[hidden] { display: none; }
+  .modal {
+    background: var(--surface);
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    width: 100%;
+    max-width: 480px;
+    padding: 24px;
+    margin: auto;
+  }
+  .modal.wide { max-width: 620px; }
+  .modal h3 { font-size: 24px; margin-bottom: 4px; }
+  .modal .sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .modal-close-row { display: flex; justify-content: flex-end; margin-top: 18px; gap: 8px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-grid .full { grid-column: 1 / -1; }
+  .form-grid .field label { font-size: 12px; margin-bottom: 2px; }
+  .form-grid input, .form-grid select, .form-grid textarea { width: 100%; }
+  .photo-preview {
+    width: 100%; aspect-ratio: 4/3; border-radius: 4px; overflow: hidden;
+    background: var(--surface-2); border: 1px dashed var(--line);
+    display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 13px;
+  }
+  .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .err-text { color: #A5432F; font-size: 12px; margin-top: 4px; min-height: 14px; }
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 30px;
+    font-size: 13px; z-index: 200; box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+  .toast[hidden] { display: none; }
+  .admin-bar {
+    background: var(--amber-bg);
+    border-bottom: 1px solid var(--amber);
+    color: var(--blue-ink);
+    font-size: 13px;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+  }
+  .admin-bar[hidden] { display: none; }
+  .spinner {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+    animation: spin 0.7s linear infinite; display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation: none; }
+    .btn { transition: none; }
+  }
+  @media (max-width: 640px) {
+    .hero h2 { font-size: 32px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .toolbar { top: env(safe-area-inset-top, 0px); position: static; }
+    header.site { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<div id="adminBar" class="admin-bar" hidden>
+  <span>Admin mode — saving downloads an updated index.html. Upload it to GitHub to go live.</span>
+  <button class="btn-quiet" id="lockAdminBtn" style="text-decoration:underline;">Exit admin mode</button>
+</div>
+
+<header class="site">
+  <div class="header-inner wrap">
+    <div class="brand">
+      <div>
+        <h1 id="siteNameHeading">Simplicity Select</h1>
+        <div class="tagline" id="siteTaglineText">Quality used cars, inspected and ready to drive.</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-primary" id="heroWaBtn" href="#" target="_blank" rel="noopener">
+        <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.87 9.87 0 0 0 4.75 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm0 18.06h-.01a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.14.82.84-3.06-.2-.31a8.16 8.16 0 0 1-1.26-4.36c0-4.51 3.67-8.18 8.19-8.18 4.51 0 8.18 3.67 8.18 8.18 0 4.51-3.67 8.23-8.18 8.23Zm4.49-6.13c-.25-.12-1.45-.71-1.68-.79-.22-.08-.39-.12-.55.13-.16.25-.63.79-.78.95-.14.16-.29.18-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.42-.55-.42-.14 0-.31-.02-.47-.02-.16 0-.43.06-.65.31-.22.25-.86.84-.86 2.04 0 1.2.88 2.37 1 2.53.12.16 1.73 2.64 4.19 3.71.59.25 1.05.4 1.4.51.59.19 1.13.16 1.55.1.47-.07 1.45-.59 1.66-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.47-.28Z"/></svg>
+        Chat on WhatsApp
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap intro">
+    <h2>Cars available right now</h2>
+    <p class="lede" id="siteLedeText">Browse the current lineup below. Tap any listing to message us directly on WhatsApp — no forms, no waiting.</p>
+    <div class="hero-contact">
+      <span class="stat-line" id="carCountLine">0 cars listed</span>
+    </div>
+  </div>
+</section>
+
+<div class="toolbar">
+  <div class="wrap toolbar-inner">
+    <div class="field search-field">
+      <label for="fSearch">Search</label>
+      <input id="fSearch" type="text" placeholder="Make, model...">
+    </div>
+    <div class="field">
+      <label for="fMinPrice">Min price</label>
+      <input id="fMinPrice" class="num-field" type="number" min="0" placeholder="Any">
+    </div>
+    <div class="field">
+      <label for="fMaxPrice">Max price</label>
+      <input id="fMaxPrice" class="num-field" type="number" min="0" placeholder="Any">
+    </div>
+    <div class="field">
+      <label for="fCondition">Condition</label>
+      <select id="fCondition">
+        <option value="">Any</option>
+        <option>Foreign Used</option>
+        <option>Nigerian Used</option>
+        <option>Brand New</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="fSort">Sort</label>
+      <select id="fSort">
+        <option value="newest">Newest first</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="price-desc">Price: high to low</option>
+        <option value="year-desc">Year: newest</option>
+      </select>
+    </div>
+    <div class="result-count" id="resultCount"></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div id="grid" class="grid"></div>
+  <div id="emptyState" class="empty" hidden>
+    <h3>No cars match right now</h3>
+    <p id="emptyText">Try clearing a filter, or check back soon — the lineup changes weekly.</p>
+  </div>
+  <div style="margin-top:24px;">
+    <button class="btn btn-outline" id="addCarBtnBottom" hidden>+ Add a car</button>
+  </div>
+</main>
+
+<footer class="site">
+  <div id="footerText">Message us on WhatsApp for viewing, pricing or trade-in questions.</div>
+</footer>
+
+<!-- Admin login modal -->
+<div class="modal-backdrop" id="loginModal" hidden>
+  <div class="modal">
+    <h3>Admin sign-in</h3>
+    <div class="sub">Enter the admin password to add or edit listings.</div>
+    <div class="field full">
+      <label for="pwInput">Password</label>
+      <input id="pwInput" type="password" autocomplete="off">
+    </div>
+    <div class="err-text" id="pwError"></div>
+    <div class="modal-close-row">
+      <button class="btn btn-outline" id="loginCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="loginSubmitBtn">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<!-- Car form modal -->
+<div class="modal-backdrop" id="carModal" hidden>
+  <div class="modal wide">
+    <h3 id="carModalTitle">Add a car</h3>
+    <div class="sub">Fields marked with a photo help buyers trust the listing.</div>
+    <div class="form-grid">
+      <div class="field full">
+        <label>Photo</label>
+        <div class="photo-preview" id="photoPreview">No photo selected</div>
+        <input type="file" id="photoInput" accept="image/*" style="margin-top:8px;">
+      </div>
+      <div class="field">
+        <label for="cMake">Make</label>
+        <input id="cMake" type="text" placeholder="Toyota">
+      </div>
+      <div class="field">
+        <label for="cModel">Model</label>
+        <input id="cModel" type="text" placeholder="Camry">
+      </div>
+      <div class="field">
+        <label for="cYear">Year</label>
+        <input id="cYear" type="number" placeholder="2019">
+      </div>
+      <div class="field">
+        <label for="cPrice">Price (₦)</label>
+        <input id="cPrice" type="number" placeholder="6500000">
+      </div>
+      <div class="field">
+        <label for="cMileage">Mileage (km)</label>
+        <input id="cMileage" type="number" placeholder="45000">
+      </div>
+      <div class="field">
+        <label for="cCondition">Condition</label>
+        <select id="cCondition">
+          <option>Foreign Used</option>
+          <option>Nigerian Used</option>
+          <option>Brand New</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="cDesc">Notes for buyers</label>
+        <textarea id="cDesc" rows="3" placeholder="Clean interior, recently serviced, full documents..."></textarea>
+      </div>
+    </div>
+    <div class="err-text" id="carFormError"></div>
+    <div class="modal-close-row">
+      <button class="btn btn-danger" id="deleteCarBtn" hidden>Delete listing</button>
+      <button class="btn btn-outline" id="carCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="saveCarBtn">Save &amp; download update</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-backdrop" id="settingsModal" hidden>
+  <div class="modal">
+    <h3>Site settings</h3>
+    <div class="sub">Shown to every visitor.</div>
+    <div class="form-grid">
+      <div class="field full">
+        <label for="sName">Site name</label>
+        <input id="sName" type="text">
+      </div>
+      <div class="field full">
+        <label for="sTagline">Tagline</label>
+        <input id="sTagline" type="text">
+      </div>
+      <div class="field full">
+        <label for="sLede">Intro line</label>
+        <textarea id="sLede" rows="2"></textarea>
+      </div>
+      <div class="field full">
+        <label for="sWhatsapp">WhatsApp number (with country code, digits only)</label>
+        <input id="sWhatsapp" type="text" placeholder="2349076952366">
+      </div>
+      <div class="field full">
+        <label for="sFooter">Footer note</label>
+        <input id="sFooter" type="text">
+      </div>
+    </div>
+    <div class="err-text" id="settingsError"></div>
+    <div class="modal-close-row">
+      <button class="btn btn-outline" id="settingsCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="saveSettingsBtn">Save &amp; download update</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script type="application/json" id="site-data">
+{
+  "settings": {
+    "siteName": "Simplicity Select",
+    "tagline": "Quality used cars, inspected and ready to drive.",
+    "lede": "Browse the current lineup below. Tap any listing to message us directly on WhatsApp — no forms, no waiting.",
+    "footerNote": "Message us on WhatsApp for viewing, pricing or trade-in questions.",
+    "whatsappNumber": "2349076952366",
+    "currency": "₦"
+  },
+  "cars": []
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+  var ADMIN_PASSWORD = "Simplicityselectautohaus@99#";
+  var state = JSON.parse(document.getElementById('site-data').textContent);
+  var isAdmin = sessionStorage.getItem('ss_admin') === '1';
+  var editingCarId = null;
+  var pendingPhotoDataUrl = null;
+
+  // ---------- helpers ----------
+  function $(id) { return document.getElementById(id); }
+  function fmtMoney(n) {
+    if (n === null || n === undefined || n === '') return '';
+    return state.settings.currency + Number(n).toLocaleString('en-NG');
+  }
+  function fmtKm(n) {
+    if (n === null || n === undefined || n === '') return '';
+    return Number(n).toLocaleString('en-NG') + ' km';
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function showToast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(showToast._h);
+    showToast._h = setTimeout(function () { t.hidden = true; }, 3200);
+  }
+  function waLinkFor(car) {
+    var text = "Hi, I'm interested in the " + car.year + " " + car.make + " " + car.model +
+      (car.price ? (" listed for " + fmtMoney(car.price)) : "") + ". Is it still available?";
+    return "https://wa.me/" + state.settings.whatsappNumber + "?text=" + encodeURIComponent(text);
+  }
+  function genId() {
+    return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  // ---------- render ----------
+  function applySettingsToDom() {
+    $('siteNameHeading').textContent = state.settings.siteName;
+    $('siteTaglineText').textContent = state.settings.tagline;
+    $('siteLedeText').textContent = state.settings.lede;
+    $('footerText').textContent = state.settings.footerNote;
+    document.title = state.settings.siteName + ' — Cars Available';
+    var waBtn = $('heroWaBtn');
+    var text = "Hi, I'd like to know more about cars available.";
+    waBtn.href = "https://wa.me/" + state.settings.whatsappNumber + "?text=" + encodeURIComponent(text);
+  }
+
+  function getFiltered() {
+    var q = $('fSearch').value.trim().toLowerCase();
+    var min = $('fMinPrice').value ? Number($('fMinPrice').value) : null;
+    var max = $('fMaxPrice').value ? Number($('fMaxPrice').value) : null;
+    var cond = $('fCondition').value;
+    var sort = $('fSort').value;
+
+    var list = state.cars.filter(function (c) {
+      if (q) {
+        var hay = (c.make + ' ' + c.model + ' ' + (c.description || '')).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      if (min !== null && Number(c.price) < min) return false;
+      if (max !== null && Number(c.price) > max) return false;
+      if (cond && c.condition !== cond) return false;
+      return true;
+    });
+
+    list.sort(function (a, b) {
+      if (sort === 'price-asc') return (a.price || 0) - (b.price || 0);
+      if (sort === 'price-desc') return (b.price || 0) - (a.price || 0);
+      if (sort === 'year-desc') return (b.year || 0) - (a.year || 0);
+      return (b.dateAdded || 0) - (a.dateAdded || 0);
+    });
+    return list;
+  }
+
+  function renderGrid() {
+    var list = getFiltered();
+    var grid = $('grid');
+    grid.innerHTML = '';
+    $('resultCount').textContent = list.length + (list.length === 1 ? ' car' : ' cars');
+    $('carCountLine').textContent = state.cars.length + (state.cars.length === 1 ? ' car listed' : ' cars listed');
+    $('emptyState').hidden = list.length !== 0;
+    $('addCarBtnBottom').hidden = !isAdmin;
+
+    if (state.cars.length === 0) {
+      $('emptyText').textContent = isAdmin
+        ? 'Nothing listed yet — use "Add a car" below to publish your first listing.'
+        : 'Check back soon — the lineup changes weekly.';
+    } else {
+      $('emptyText').textContent = 'Try clearing a filter to see more listings.';
+    }
+
+    list.forEach(function (car) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      var photoHtml = car.photo
+        ? '<img src="' + car.photo + '" alt="' + esc(car.year + ' ' + car.make + ' ' + car.model) + '" loading="lazy">'
+        : '<div class="no-photo">No photo yet</div>';
+
+      card.innerHTML =
+        '<div class="photo-wrap">' +
+          photoHtml +
+          '<div class="year-badge">' + esc(car.year || '') + '</div>' +
+          (car.condition ? '<div class="condition-badge">' + esc(car.condition) + '</div>' : '') +
+        '</div>' +
+        '<div class="card-body">' +
+          '<div class="card-title">' + esc(car.make) + ' ' + esc(car.model) + '</div>' +
+          '<div class="card-specs">' + (car.mileage ? esc(fmtKm(car.mileage)) : 'Mileage not listed') + '</div>' +
+          (car.description ? '<div class="card-desc">' + esc(car.description) + '</div>' : '') +
+          '<div class="card-price">' + esc(fmtMoney(car.price)) + '</div>' +
+          '<div class="card-actions">' +
+            '<a class="btn btn-primary" href="' + waLinkFor(car) + '" target="_blank" rel="noopener">' +
+              '<svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.87 9.87 0 0 0 4.75 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm0 18.06h-.01a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.14.82.84-3.06-.2-.31a8.16 8.16 0 0 1-1.26-4.36c0-4.51 3.67-8.18 8.19-8.18 4.51 0 8.18 3.67 8.18 8.18 0 4.51-3.67 8.23-8.18 8.23Zm4.49-6.13c-.25-.12-1.45-.71-1.68-.79-.22-.08-.39-.12-.55.13-.16.25-.63.79-.78.95-.14.16-.29.18-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.42-.55-.42-.14 0-.31-.02-.47-.02-.16 0-.43.06-.65.31-.22.25-.86.84-.86 2.04 0 1.2.88 2.37 1 2.53.12.16 1.73 2.64 4.19 3.71.59.25 1.05.4 1.4.51.59.19 1.13.16 1.55.1.47-.07 1.45-.59 1.66-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.47-.28Z"/></svg>' +
+              'Message' +
+            '</a>' +
+          '</div>' +
+          (isAdmin ? '<div class="admin-row"><button class="btn btn-outline edit-btn" data-id="' + car.id + '" style="flex:1;">Edit</button></div>' : '') +
+        '</div>';
+      grid.appendChild(card);
+    });
+
+    if (isAdmin) {
+      grid.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { openCarModal(btn.getAttribute('data-id')); });
+      });
+    }
+  }
+
+  function render() {
+    applySettingsToDom();
+    $('adminBar').hidden = !isAdmin;
+    renderGrid();
+  }
+
+  // ---------- filters ----------
+  ['fSearch', 'fMinPrice', 'fMaxPrice', 'fCondition', 'fSort'].forEach(function (id) {
+    $(id).addEventListener('input', renderGrid);
+    $(id).addEventListener('change', renderGrid);
+  });
+
+  // ---------- admin login ----------
+  $('siteNameHeading').addEventListener('click', function () {
+    var now = Date.now();
+    if (!openLoginModal._clicks || now - openLoginModal._last > 2500) {
+      openLoginModal._clicks = 0;
+    }
+    openLoginModal._clicks++;
+    openLoginModal._last = now;
+    if (openLoginModal._clicks >= 5) {
+      openLoginModal._clicks = 0;
+      openLoginModal();
+    }
+  });
+  function openLoginModal() {
+    if (isAdmin) { showToast('Already in admin mode.'); return; }
+    $('pwInput').value = '';
+    $('pwError').textContent = '';
+    $('loginModal').hidden = false;
+    $('pwInput').focus();
+  }
+  $('loginCancelBtn').addEventListener('click', function () { $('loginModal').hidden = true; });
+  $('loginSubmitBtn').addEventListener('click', doLogin);
+  $('pwInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+  function doLogin() {
+    if ($('pwInput').value === ADMIN_PASSWORD) {
+      isAdmin = true;
+      sessionStorage.setItem('ss_admin', '1');
+      $('loginModal').hidden = true;
+      render();
+      showToast('Admin mode on.');
+    } else {
+      $('pwError').textContent = 'Incorrect password.';
+    }
+  }
+  $('lockAdminBtn').addEventListener('click', function () {
+    isAdmin = false;
+    sessionStorage.removeItem('ss_admin');
+    render();
+  });
+
+  // ---------- car modal ----------
+  $('addCarBtnBottom').addEventListener('click', function () { openCarModal(null); });
+  document.body.addEventListener('click', function (e) {
+    if (e.target && e.target.id === 'addCarBtnTop') openCarModal(null);
+  });
+
+  function openCarModal(carId) {
+    editingCarId = carId;
+    pendingPhotoDataUrl = null;
+    var car = carId ? state.cars.find(function (c) { return c.id === carId; }) : null;
+    $('carModalTitle').textContent = car ? 'Edit listing' : 'Add a car';
+    $('cMake').value = car ? car.make : '';
+    $('cModel').value = car ? car.model : '';
+    $('cYear').value = car ? car.year : '';
+    $('cPrice').value = car ? car.price : '';
+    $('cMileage').value = car ? car.mileage : '';
+    $('cCondition').value = car ? car.condition : 'Foreign Used';
+    $('cDesc').value = car ? (car.description || '') : '';
+    $('photoInput').value = '';
+    $('carFormError').textContent = '';
+    if (car && car.photo) {
+      pendingPhotoDataUrl = car.photo;
+      $('photoPreview').innerHTML = '<img src="' + car.photo + '" alt="">';
+    } else {
+      $('photoPreview').innerHTML = 'No photo selected';
+    }
+    $('deleteCarBtn').hidden = !car;
+    $('carModal').hidden = false;
+  }
+  $('carCancelBtn').addEventListener('click', function () { $('carModal').hidden = true; });
+
+  $('photoInput').addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    compressImage(file, 1000, 0.72).then(function (dataUrl) {
+      pendingPhotoDataUrl = dataUrl;
+      $('photoPreview').innerHTML = '<img src="' + dataUrl + '" alt="">';
+    }).catch(function () {
+      $('carFormError').textContent = "Couldn't process that image — try another file.";
+    });
+  });
+
+  function compressImage(file, maxWidth, quality) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var img = new Image();
+        img.onload = function () {
+          var scale = Math.min(1, maxWidth / img.width);
+          var w = Math.round(img.width * scale);
+          var h = Math.round(img.height * scale);
+          var canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  $('saveCarBtn').addEventListener('click', function () {
+    var make = $('cMake').value.trim();
+    var model = $('cModel').value.trim();
+    var year = $('cYear').value.trim();
+    var price = $('cPrice').value.trim();
+    if (!make || !model || !year || !price) {
+      $('carFormError').textContent = 'Make, model, year and price are required.';
+      return;
+    }
+    var car = {
+      id: editingCarId || genId(),
+      make: make,
+      model: model,
+      year: Number(year),
+      price: Number(price),
+      mileage: $('cMileage').value ? Number($('cMileage').value) : null,
+      condition: $('cCondition').value,
+      description: $('cDesc').value.trim(),
+      photo: pendingPhotoDataUrl,
+      dateAdded: editingCarId
+        ? (state.cars.find(function (c) { return c.id === editingCarId; }) || {}).dateAdded || Date.now()
+        : Date.now()
+    };
+    if (editingCarId) {
+      var idx = state.cars.findIndex(function (c) { return c.id === editingCarId; });
+      state.cars[idx] = car;
+    } else {
+      state.cars.push(car);
+    }
+    $('carModal').hidden = true;
+    render();
+    publishState('Listing saved — downloading updated file…');
+  });
+
+  $('deleteCarBtn').addEventListener('click', function () {
+    if (!editingCarId) return;
+    if (!confirm('Delete this listing? This can\'t be undone.')) return;
+    state.cars = state.cars.filter(function (c) { return c.id !== editingCarId; });
+    $('carModal').hidden = true;
+    render();
+    publishState('Listing deleted — downloading updated file…');
+  });
+
+  // ---------- settings modal ----------
+  var settingsTrigger = document.createElement('button');
+  settingsTrigger.className = 'btn-quiet';
+  settingsTrigger.textContent = 'Settings';
+  settingsTrigger.style.textDecoration = 'underline';
+  settingsTrigger.addEventListener('click', openSettingsModal);
+  $('adminBar').appendChild(settingsTrigger);
+
+  function openSettingsModal() {
+    $('sName').value = state.settings.siteName;
+    $('sTagline').value = state.settings.tagline;
+    $('sLede').value = state.settings.lede;
+    $('sWhatsapp').value = state.settings.whatsappNumber;
+    $('sFooter').value = state.settings.footerNote;
+    $('settingsError').textContent = '';
+    $('settingsModal').hidden = false;
+  }
+  $('settingsCancelBtn').addEventListener('click', function () { $('settingsModal').hidden = true; });
+  $('saveSettingsBtn').addEventListener('click', function () {
+    var wa = $('sWhatsapp').value.replace(/[^0-9]/g, '');
+    if (!wa) { $('settingsError').textContent = 'Enter a valid WhatsApp number with country code.'; return; }
+    state.settings.siteName = $('sName').value.trim() || state.settings.siteName;
+    state.settings.tagline = $('sTagline').value.trim();
+    state.settings.lede = $('sLede').value.trim();
+    state.settings.footerNote = $('sFooter').value.trim();
+    state.settings.whatsappNumber = wa;
+    $('settingsModal').hidden = true;
+    render();
+    publishState('Settings saved — downloading updated file…');
+  });
+
+  // ---------- add-car entry point in admin bar ----------
+  (function addTopButton() {
+    var b = document.createElement('button');
+    b.className = 'btn-quiet';
+    b.textContent = '+ Add a car';
+    b.style.textDecoration = 'underline';
+    b.addEventListener('click', function () { openCarModal(null); });
+    $('adminBar').insertBefore(b, $('lockAdminBtn'));
+  })();
+
+  // ---------- publish ----------
+  function buildFullHtml() {
+    var doc = document.documentElement.cloneNode(true);
+    var dataScript = doc.querySelector('#site-data');
+    dataScript.textContent = JSON.stringify(state);
+    // ensure admin never ships "on" in the published snapshot
+    return '<!doctype html>\n' + doc.outerHTML;
+  }
+
+  function publishState(msg) {
+    var html = buildFullHtml();
+    var blob = new Blob([html], { type: 'text/html' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(msg || 'Downloaded index.html — upload it to GitHub to update the live site.');
+  }
+
+  // ---------- init ----------
+  render();
+})();
+</script>
+</body>
+</html>
